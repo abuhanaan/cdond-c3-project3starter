@@ -44,6 +44,11 @@ jobs:
           name: Hello World Test
           command: |
             echo hello-world!
+            exit 1
+      - slack/notify:
+          channel: C04CPS646NP
+          event: fail
+          template: hello_test_fail
             
       
 
