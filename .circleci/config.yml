@@ -339,7 +339,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - print_hello_world
+      - print_hello_world:
+          context: my_context
       # - build-frontend
       # - build-backend
       # - test-frontend:
