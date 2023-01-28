@@ -224,24 +224,51 @@ jobs:
       - destroy-environment:
           workflow_id: $CIRCLE_WORKFLOW_ID
 
-  # configure-infrastructure:
-  #   docker:
-  #     # Docker image here that supports Ansible
-  #   steps:
-  #     # Checkout code from git
-  #     # Add ssh keys with fingerprint
-  #     # attach workspace
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     - run:
-  #         name: Configure server
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     # Here's where you will add some code to rollback on failure      
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: alpine:3.12.0
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints:
+            - "ec:bb:29:bd:53:0c:c0:06:69:89:8b:99:8e:89:f1:3d"
+      # attach workspace
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            apk add --update tar gzip
+      - run:
+          name: Install Python
+          command: |
+            # Your code here
+            apk add --update python3
+      - run:
+          name: Install Ansible
+          command: |
+            # Your code here
+            apk add --update ansible
+      - run:
+          name: Install aws-cli
+          command: |
+            # Your code here
+            apk add --no-cache aws-cli
+            # exit 1
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            printenv | grep TYPEORM_
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            # exit 1
+      # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          workflow_id: $CIRCLE_WORKFLOW_ID
 
   # run-migrations:
   #   docker:
@@ -376,8 +403,8 @@ workflows:
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
