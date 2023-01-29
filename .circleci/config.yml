@@ -246,7 +246,7 @@ jobs:
           command: |
             # Your code here
             # apk add --update tar gzip
-            apt install tar gzip
+            sudo apt install tar gzip
       # - run:
       #     name: Install Python
       #     command: |
