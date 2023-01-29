@@ -228,10 +228,12 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
+      # - image: alpine:3.12.0
       - image: cimg/python:3.10
     steps:
       # Checkout code from git
       - checkout
+      - run: python --version
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints:
@@ -243,23 +245,25 @@ jobs:
           name: Install dependencies
           command: |
             # Your code here
-            apk add --update tar gzip
-      - run:
-          name: Install Python
-          command: |
-            # Your code here
-            apk add --update python3
+            # apk add --update tar gzip
+            apt install tar gzip
+      # - run:
+      #     name: Install Python
+      #     command: |
+      #       # Your code here
+      #       apk add --update python3
       - run:
           name: Install Ansible
           command: |
             # Your code here
             # apk add --update ansible
-            python -m pip install ansible
+            pip3 install ansible
       - run:
           name: Install aws-cli
           command: |
             # Your code here
-            apk add --no-cache aws-cli
+            # apk add --no-cache aws-cli
+            pip3 install aws-cli
             # exit 1 
       - run:
           name: Configure server
