@@ -258,7 +258,7 @@ jobs:
           command: |
             # Your code here
             apk add --no-cache aws-cli
-            # exit 1
+            # exit 1 
       - run:
           name: Configure server
           command: |
