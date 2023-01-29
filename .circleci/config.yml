@@ -228,7 +228,7 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: alpine:3.12.0
+      - image: cimg/python:3.10
     steps:
       # Checkout code from git
       - checkout
@@ -253,7 +253,8 @@ jobs:
           name: Install Ansible
           command: |
             # Your code here
-            apk add --update ansible
+            # apk add --update ansible
+            python -m pip install ansible
       - run:
           name: Install aws-cli
           command: |
