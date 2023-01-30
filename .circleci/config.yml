@@ -372,6 +372,7 @@ jobs:
             sudo bash /tmp/nodesource_setup.sh
             sudo apt install nodejs
       - run: node --version
+      - run: npm --version
                     
   # deploy-backend:
   #   docker:
