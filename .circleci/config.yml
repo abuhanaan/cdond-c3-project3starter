@@ -309,16 +309,13 @@ jobs:
   deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
-      - image: cimg/python:3.10
+      - image: cimg/python:3.10-node
     steps:
       # Checkout code from git
       - checkout
       - run: python --version
-      # Install dependencies
-      # - run:
-      #     name: Install Python
-      #     command: |
-      #       # your code here
+      - run: node --version
+      - run: npm --version
       - run:
           name: Install Utilities
           command: |
@@ -330,16 +327,6 @@ jobs:
           command: |
             # your code here
             pip install ansible
-      - run:
-          name: Install Node
-          command: |
-            # your code here
-            sudo apt install node
-      - run:
-          name: Install NPM
-          command: |
-            # your code here
-            sudo apt install npm
       - run:
           name: Install AWS CLI
           command: |
@@ -370,14 +357,6 @@ jobs:
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
             workflow_id: $CIRCLE_WORKFLOW_ID
-
-  test_job:
-    docker:
-      - image: cimg/python:3.10-node
-    steps:
-      - run: python --version
-      - run: node --version
-      - run: npm --version
                     
   # deploy-backend:
   #   docker:
@@ -457,30 +436,29 @@ jobs:
 workflows:
   default:
     jobs:
-      - test_job
-      # - print_hello_world:
-      #     context: my_context
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - print_hello_world:
+          context: my_context
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
