@@ -309,19 +309,27 @@ jobs:
   deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
-      - image: cimg/python:3.10-node
+      - image: cimg/python:3.10
     steps:
       # Checkout code from git
       - checkout
       - run: python --version
-      - run: node --version
-      - run: npm --version
       - run:
           name: Install Utilities
           command: |
             # your code here
             sudo apt update
             sudo apt install tar gzip
+      - run: 
+          name: Install Node
+          command: |
+            sudo apt-get install curl
+            cd ~
+            curl -sL https://deb.nodesource.com/setup_14.x -o /tmp/nodesource_setup.sh
+            sudo bash /tmp/nodesource_setup.sh
+            sudo apt install nodejs
+      - run: node --version
+      - run: npm --version
       - run:
           name: Install Ansible
           command: |
@@ -358,21 +366,6 @@ jobs:
       - destroy-environment:
             workflow_id: $CIRCLE_WORKFLOW_ID
 
-  test_job:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - run: python --version
-      - run: 
-          name: Install Node
-          command: |
-            sudo apt-get install curl
-            cd ~
-            curl -sL https://deb.nodesource.com/setup_14.x -o /tmp/nodesource_setup.sh
-            sudo bash /tmp/nodesource_setup.sh
-            sudo apt install nodejs
-      - run: node --version
-      - run: npm --version
                     
   # deploy-backend:
   #   docker:
@@ -452,30 +445,29 @@ jobs:
 workflows:
   default:
     jobs:
-      - test_job
       # - print_hello_world:
-      #     context: my_context
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+          context: my_context
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
