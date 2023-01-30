@@ -376,7 +376,8 @@ jobs:
       - image: cimg/python:3.10-node
     steps:
       - run: python --version
-      - run: node --version 
+      - run: node --version
+      - run: npm --version
                     
   # deploy-backend:
   #   docker:
