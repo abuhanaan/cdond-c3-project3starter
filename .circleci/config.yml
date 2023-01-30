@@ -26,20 +26,23 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      # Add parameter here     
+      # Add parameter here
+      workflow_id:
+        type: string
+        default: ""  
     steps:
       - run:
           name: Revert migrations
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            export SUCCESS=$(curl https://kvdb.io/VLDoJ5C1N6LKU3cdy7p7Ww/migration_${CIRCLE_WORKFLOW_ID:0:7} --insecure)
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+              cd ~/project/backend
+              npm install
+              #  Add revert code here. You can find this in the Getting Started section.
+              npm run migrations:revert
             fi
             
 jobs:
@@ -489,7 +492,9 @@ jobs:
             fi
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-            workflow_id: $CIRCLE_WORKFLOW_ID 
+          workflow_id: $CIRCLE_WORKFLOW_ID
+      - revert-migrations:
+          workflow_id: $CIRCLE_WORKFLOW_ID
 
   # cloudfront-update:
   #   docker:
